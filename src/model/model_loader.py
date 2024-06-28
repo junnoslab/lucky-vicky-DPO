@@ -1,7 +1,8 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from peft import LoraModel, LoraConfig
+from peft import get_peft_model, LoraModel, LoraConfig
 
 from .models import Models
+from ..utils import TrainConfig
 
 
 class ModelLoader:
@@ -37,7 +38,7 @@ class ModelLoader:
         return _tokenizer, _model
 
     def load_lora_model(
-        self, model: Models, config: LoraConfig, adapter_name: str = "lora"
+        self, model: Models, training_config: TrainConfig, adapter_name: str = "lora"
     ) -> LoraModel:
         """
         Load the specified model and return the LoraModel instance.
@@ -49,4 +50,15 @@ class ModelLoader:
             LoraModel: The LoraModel instance.
         """
         _, _model = self.load_tokenizer_and_model(model)
-        return LoraModel(_model, config=config, adapter_name=adapter_name)
+        config = LoraConfig(
+            r=training_config.r,
+            lora_alpha=training_config.lora_alpha,
+            target_modules=["query", "value"],
+            lora_dropout=training_config.lora_dropout,
+            bias=training_config.bias,
+            modules_to_save=["decode_head"],
+        )
+        lora_model = get_peft_model(
+            model=_model, peft_config=config, adapter_name=adapter_name
+        )
+        return lora_model
