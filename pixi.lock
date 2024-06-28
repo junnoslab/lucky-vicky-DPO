@@ -1810,7 +1810,7 @@ packages:
   name: lora
   version: 0.1.0
   path: .
-  sha256: 6a481d726a6643ac2063d51d749f526e9e31d7faa4269af7f5bd032a1f114d6e
+  sha256: e94ea3ee388a1b04dad9ca40f47625388cc99e0f636bd3d88f4746aa16b30f1e
   requires_dist:
   - pre-commit
   requires_python: '>=3.11'
