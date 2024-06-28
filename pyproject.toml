@@ -4,15 +4,21 @@ version = "0.1.0"
 description = "Project for a LoRA training."
 authors = [{ name = "Junnos ", email = "junnos.dev@gmail.com" }]
 requires-python = ">= 3.11"
-dependencies = ["pre-commit"]
+dependencies = ["setuptools", "pre-commit"]
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+py-modules = ["src"]
+
 [tool.pixi.project]
 channels = ["conda-forge"]
-platforms = ["osx-arm64"]
+platforms = ["osx-arm64", "linux-64"]
+
+[tool.pixi.system-requirements]
+linux = "4.15.0"
 
 [tool.pixi.pypi-dependencies]
 LoRA = { path = ".", editable = true }
@@ -22,10 +28,10 @@ default = "python -m src"
 d = { depends-on = ["default"] }
 
 [tool.pixi.dependencies]
+pytorch = ">=2.3.1,<2.4"
 transformers = ">=4.41.2,<4.42"
 peft = ">=0.11.1,<0.12"
 datasets = ">=2.14.4,<2.15"
-pytorch = ">=2.3.1,<2.4"
 
 [tool.pyright]
 venv = "default"
