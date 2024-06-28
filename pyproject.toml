@@ -2,9 +2,9 @@
 name = "LoRA"
 version = "0.1.0"
 description = "Add a short description here"
-authors = [{name = "Junnos ", email = "junnos.dev@gmail.com"}]
+authors = [{ name = "Junnos ", email = "junnos.dev@gmail.com" }]
 requires-python = ">= 3.11"
-dependencies = []
+dependencies = ["pre-commit"]
 
 [build-system]
 requires = ["setuptools"]
