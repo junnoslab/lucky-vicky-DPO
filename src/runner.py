@@ -7,6 +7,6 @@ class Runner:
 
     def run(self):
         loader = ModelLoader()
-        tokenizer, model = loader.load_model(Models.BLOSSOM)
+        tokenizer, model = loader.load_tokenizer_and_model(Models.BLOSSOM)
 
         print(tokenizer, model)
