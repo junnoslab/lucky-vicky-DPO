@@ -16,7 +16,7 @@ class TrainConfig:
         default="MLP-KTLim/llama-3-Korean-Bllossom-8B",
         metadata={"help": "the location of the SFT model name or path"},
     )
-    r: Optional[int] = field(
+    rank: Optional[int] = field(
         default=32, metadata={"help": "Lora attention dimension (the “rank”)"}
     )
     lora_alpha: Optional[float] = field(
