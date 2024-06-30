@@ -1,10 +1,16 @@
 from typing import Optional
+import logging
 
 from dataclasses import dataclass, field
 
 
 @dataclass
 class TrainConfig:
+    # General
+    logger_level: Optional[int] = field(
+        default=logging.INFO, metadata={"help": "logger level"}
+    )
+
     # Model
     model_name_or_path: Optional[str] = field(
         default="MLP-KTLim/llama-3-Korean-Bllossom-8B",
