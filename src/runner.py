@@ -1,5 +1,4 @@
-from datasets import Dataset
-
+from .data import DataLoader, Datasets
 from .model import ModelLoader, Models
 from .train import Trainer
 from .utils import TrainConfig
@@ -12,19 +11,27 @@ class Runner:
         self.config = config_args
 
     def run(self):
-        loader = ModelLoader()
+        model_loader = ModelLoader()
 
         # 1. Load a LoraModel (Use LoraConfig)
-        lora_model = loader.load_lora_model(Models.BLOSSOM, training_config=self.config)
+        tokenizer, model = model_loader.load_tokenizer_and_model(Models.BLOSSOM)
+
+        lora_model = model_loader.load_lora_model(
+            Models.BLOSSOM, training_config=self.config
+        )
 
         # 2. Load a dataset
-        train_dataset = Dataset()
-        eval_dataset = Dataset()
+        data_loader = DataLoader()
+
+        dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        trainer = Trainer()
+        trainer = Trainer(config=self.config)
         trainer.train(
-            model=lora_model, train_dataset=train_dataset, eval_dataset=eval_dataset
+            model=lora_model,
+            tokenizer=tokenizer,
+            train_dataset=dataset["train"],
+            eval_dataset=dataset["eval"],
         )
 
         # 4. Save the model
