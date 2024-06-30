@@ -33,7 +33,7 @@ class ModelLoader:
         """
         _tokenizer = AutoTokenizer.from_pretrained(model.value)
         _model = AutoModelForCausalLM.from_pretrained(
-            model.value, torch_dtype=model.dtype
+            model.value, torch_dtype=model.dtype, device_map="auto"
         )
         return _tokenizer, _model
 
@@ -51,12 +51,12 @@ class ModelLoader:
         """
         _, _model = self.load_tokenizer_and_model(model)
         config = LoraConfig(
-            r=training_config.r,
+            task_type="CAUSAL_LM",
+            r=training_config.rank,
             lora_alpha=training_config.lora_alpha,
-            target_modules=["query", "value"],
             lora_dropout=training_config.lora_dropout,
             bias=training_config.bias,
-            modules_to_save=["decode_head"],
+            init_lora_weights="gaussian",
         )
         lora_model = get_peft_model(
             model=_model, peft_config=config, adapter_name=adapter_name
