@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,linux
 
+### Project ###
+
+# datasets
+data/*
+
 ### Linux ###
 *~
 
@@ -224,3 +229,5 @@ pyrightconfig.json
 # pixi environments
 .pixi
 *.egg-info
+
+# End of https://www.toptal.com/developers/gitignore/api/python,macos,linux
