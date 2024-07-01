@@ -32,10 +32,11 @@ class ModelLoader:
             tuple[AutoTokenizer, AutoModelForCausalLM]: A tuple containing the tokenizer and model instances.
         """
         _tokenizer = AutoTokenizer.from_pretrained(model.value)
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         _model = AutoModelForCausalLM.from_pretrained(
             model.value,
             torch_dtype=model.dtype,
-            quantization_config=BitsAndBytesConfig(load_in_8bit=True),
+            quantization_config=bnb_config,
             low_cpu_mem_usage=True,
         )
         return _tokenizer, _model

@@ -3,6 +3,7 @@ from transformers import (
     Trainer as HFTrainer,
     TrainingArguments,
     PreTrainedTokenizerBase,
+    PreTrainedModel,
 )
 import evaluate
 import numpy as np
@@ -22,6 +23,7 @@ class Trainer:
         self.training_args = TrainingArguments(
             output_dir=config.output_dir,
             evaluation_strategy="epoch",
+            num_train_epochs=5,
             per_device_train_batch_size=config.per_device_train_batch_size,
             per_device_eval_batch_size=config.per_device_eval_batch_size,
             learning_rate=config.learning_rate,
@@ -37,7 +39,7 @@ class Trainer:
         model: nn.Module,
         tokenizer: PreTrainedTokenizerBase,
         dataset: Dataset,
-    ):
+    ) -> PreTrainedModel:
         # Setup model
         model = model.to(self.device)
 
@@ -81,4 +83,8 @@ class Trainer:
         )
         trainer.train()
 
+        trainer.model.save_pretrained(self.training_args.output_dir)
         trainer.save_model(self.training_args.output_dir)
+        trainer.model.config.save_pretrained(self.training_args.output_dir)
+
+        return trainer.model
