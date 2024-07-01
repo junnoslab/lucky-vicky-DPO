@@ -13,4 +13,4 @@ class Models(StrEnum):
     @property
     def dtype(self) -> dtype:
         if self == Models.BLOSSOM:
-            return torch.bfloat16
+            return torch.float16

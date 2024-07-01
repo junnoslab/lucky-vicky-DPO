@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import get_peft_model, LoraModel, LoraConfig
 
 from .models import Models
@@ -33,13 +33,13 @@ class ModelLoader:
         """
         _tokenizer = AutoTokenizer.from_pretrained(model.value)
         _model = AutoModelForCausalLM.from_pretrained(
-            model.value, torch_dtype=model.dtype, device_map="auto"
+            model.value, torch_dtype=model.dtype, quantization_config=BitsAndBytesConfig(load_in_8bit=True), low_cpu_mem_usage=True
         )
         return _tokenizer, _model
 
     def load_lora_model(
         self, model: Models, training_config: TrainConfig, adapter_name: str = "lora"
-    ) -> LoraModel:
+    ) -> tuple[AutoTokenizer, AutoModelForCausalLM, LoraModel]:
         """
         Load the specified model and return the LoraModel instance.
 
@@ -49,7 +49,7 @@ class ModelLoader:
         Returns:
             LoraModel: The LoraModel instance.
         """
-        _, _model = self.load_tokenizer_and_model(model)
+        tokenizer, base_model = self.load_tokenizer_and_model(model)
         config = LoraConfig(
             task_type="CAUSAL_LM",
             r=training_config.rank,
@@ -59,6 +59,6 @@ class ModelLoader:
             init_lora_weights="gaussian",
         )
         lora_model = get_peft_model(
-            model=_model, peft_config=config, adapter_name=adapter_name
+            model=base_model, peft_config=config, adapter_name=adapter_name
         )
-        return lora_model
+        return tokenizer, base_model, lora_model

@@ -57,7 +57,7 @@ class TrainConfig:
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
     per_device_train_batch_size: Optional[int] = field(
-        default=8, metadata={"help": "train batch size per device"}
+        default=2, metadata={"help": "train batch size per device"}
     )
     per_device_eval_batch_size: Optional[int] = field(
         default=2, metadata={"help": "eval batch size per device"}

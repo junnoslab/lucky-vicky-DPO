@@ -1,8 +1,13 @@
-from .data import DataLoader, Datasets
+import logging
+
+import torch
+
+from .data import DataCollator, DataLoader, Datasets
 from .model import ModelLoader, Models
 from .train import Trainer
 from .utils import TrainConfig
 
+_LOGGER = logging.getLogger(__name__)
 
 class Runner:
     config: TrainConfig
@@ -11,12 +16,13 @@ class Runner:
         self.config = config_args
 
     def run(self):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        _LOGGER.info(f"Using device: {device}")
+        
         model_loader = ModelLoader()
 
         # 1. Load a LoraModel (Use LoraConfig)
-        tokenizer, model = model_loader.load_tokenizer_and_model(Models.BLOSSOM)
-
-        lora_model = model_loader.load_lora_model(
+        tokenizer, base_model, lora_model = model_loader.load_lora_model(
             Models.BLOSSOM, training_config=self.config
         )
 
@@ -26,12 +32,9 @@ class Runner:
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        trainer = Trainer(config=self.config)
+        trainer = Trainer(config=self.config, device=device)
         trainer.train(
             model=lora_model,
             tokenizer=tokenizer,
-            train_dataset=dataset["train"],
-            eval_dataset=dataset["eval"],
+            dataset=dataset,
         )
-
-        # 4. Save the model
