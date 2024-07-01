@@ -5,6 +5,7 @@
 
 # datasets
 data/*
+res/*
 
 ### Linux ###
 *~

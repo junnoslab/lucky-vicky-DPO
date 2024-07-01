@@ -33,7 +33,10 @@ class ModelLoader:
         """
         _tokenizer = AutoTokenizer.from_pretrained(model.value)
         _model = AutoModelForCausalLM.from_pretrained(
-            model.value, torch_dtype=model.dtype, quantization_config=BitsAndBytesConfig(load_in_8bit=True), low_cpu_mem_usage=True
+            model.value,
+            torch_dtype=model.dtype,
+            quantization_config=BitsAndBytesConfig(load_in_8bit=True),
+            low_cpu_mem_usage=True,
         )
         return _tokenizer, _model
 
