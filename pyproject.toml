@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Project for a LoRA training."
 authors = [{ name = "Junnos ", email = "junnos.dev@gmail.com" }]
 requires-python = ">= 3.11"
-dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "transformers==4.38.2", "accelerate", "bitsandbytes", "scikit-learn", "wandb"]
+dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "transformers==4.38.2", "accelerate", "bitsandbytes", "scikit-learn", "wandb", "trl"]
 
 [build-system]
 requires = ["setuptools"]
