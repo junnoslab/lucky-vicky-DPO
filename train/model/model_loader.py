@@ -61,6 +61,7 @@ class ModelLoader:
             lora_dropout=training_config.lora_dropout,
             bias=training_config.bias,
             init_lora_weights="gaussian",
+            target_modules=["q_proj", "k_proj", "v_proj", "out_proj"],
         )
         lora_model = get_peft_model(
             model=base_model, peft_config=config, adapter_name=adapter_name

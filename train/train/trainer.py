@@ -43,22 +43,13 @@ class Trainer:
 
         # Setup dataset
         def tokenize_function(examples: Dataset):
-            inputs = tokenizer(
+            return tokenizer(
                 examples["input"],
+                text_target=examples["output"],
                 padding="max_length",
                 max_length=512,
                 truncation=True,
-                return_tensors="pt",
             )
-            targets = tokenizer(
-                examples["output"],
-                padding="max_length",
-                max_length=512,
-                truncation=True,
-                return_tensors="pt",
-            )
-            inputs["labels"] = targets["input_ids"]
-            return inputs
 
         tokenized_datasets = dataset.map(tokenize_function, batched=True)
 

@@ -1,6 +1,5 @@
 import logging
 
-from transformers import pipeline
 import torch
 
 from .data import DataLoader, Datasets
@@ -35,39 +34,8 @@ class Runner:
 
         # 3. Train (Use TrainingArguments)
         trainer = Trainer(config=self.config, device=device)
-        pretrained_model = trainer.train(
+        trainer.train(
             model=lora_model,
             tokenizer=tokenizer,
             dataset=dataset,
         )
-
-        print(pretrained_model)
-
-        _pipeline = pipeline(
-            "text-generation", model=pretrained_model, tokenizer=tokenizer
-        )
-        _pipeline.model.eval()
-
-        messages = [
-            {"role": "user", "content": "월요일부터 코감기에 걸려서 머리가 아파."}
-        ]
-
-        prompt = _pipeline.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-
-        terminators = [
-            _pipeline.tokenizer.eos_token_id,
-            _pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>"),
-        ]
-
-        outputs = _pipeline(
-            prompt,
-            max_new_tokens=2048,
-            eos_token_id=terminators,
-            do_sample=True,
-            temperature=0.6,
-            top_p=0.9,
-        )
-
-        print(outputs[0]["generated_text"])
