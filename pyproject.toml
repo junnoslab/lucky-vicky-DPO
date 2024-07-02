@@ -11,7 +11,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["src"]
+py-modules = ["train"]
 
 [tool.pixi.project]
 channels = ["conda-forge"]
@@ -24,8 +24,8 @@ linux = "4.15.0"
 LoRA = { path = ".", editable = true }
 
 [tool.pixi.tasks]
-default = "python -m src"
-d = { depends-on = ["default"] }
+train = "python -m train"
+t = { depends-on = ["train"] }
 
 [tool.pixi.dependencies]
 python = ">=3.12.4,<3.13"
