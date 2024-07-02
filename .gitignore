@@ -231,4 +231,25 @@ pyrightconfig.json
 .pixi
 *.egg-info
 
+### wandb ###
+
+*.swp
+.python-version
+wandb
+wandb-debug.log
+__pycache__
+.ipynb_checkpoints
+.DS_Store
+logs
+summary*
+run*
+colabs/dataset/*
+colabs/train_data/*
+colabs/output/*
+MNIST/*
+log.txt
+colabs/log.txt
+artifacts
+examples/jax/jax-llm/proteins-base/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,linux
