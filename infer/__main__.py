@@ -22,6 +22,7 @@ if __name__ == "__main__":
         trust_remote_code=True,
         low_cpu_mem_usage=True,
     )
+    base_model.eval()
     base_model.config.use_cache = False
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     adapted_model.eval()
     print(adapted_model.active_adapter)
 
-    _pipeline = pipeline(
+    adapted_pipeline = pipeline(
         "text-generation",
         model=adapted_model,
         tokenizer=tokenizer,
@@ -47,15 +48,23 @@ if __name__ == "__main__":
         device_map="auto",
     )
 
+    base_pipeline = pipeline(
+        "text-generation",
+        model=base_model,
+        tokenizer=tokenizer,
+        model_kwargs={"torch_dtype": torch.bfloat16},
+        device_map="auto",
+    )
+
     terminators = [
-        _pipeline.tokenizer.eos_token_id,
-        _pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>"),
+        adapted_pipeline.tokenizer.eos_token_id,
+        adapted_pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>"),
     ]
 
     while True:
         text = input("☘️ ")
 
-        prompt = _pipeline.tokenizer.apply_chat_template(
+        prompt = adapted_pipeline.tokenizer.apply_chat_template(
             [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": text},
@@ -64,7 +73,7 @@ if __name__ == "__main__":
             add_generation_prompt=True,
         )
 
-        outputs = _pipeline(
+        adapted_outputs = adapted_pipeline(
             prompt,
             max_new_tokens=2048,
             eos_token_id=terminators,
@@ -73,4 +82,14 @@ if __name__ == "__main__":
             top_p=0.9,
         )
 
-        print(outputs[0]["generated_text"])
+        base_outputs = base_pipeline(
+            prompt,
+            max_new_tokens=2048,
+            eos_token_id=terminators,
+            do_sample=True,
+            temperature=0.6,
+            top_p=0.9,
+        )
+
+        print(adapted_outputs[0]["generated_text"][len(prompt) :])
+        print(base_outputs[0]["generated_text"][len(prompt) :])
