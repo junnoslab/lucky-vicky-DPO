@@ -5,8 +5,6 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-import evaluate
-import numpy as np
 import torch
 import torch.nn as nn
 
@@ -66,20 +64,12 @@ class Trainer:
 
         data_collator = DataCollator(tokenizer=tokenizer, device=self.device)
 
-        def compute_metrics(eval_pred):
-            metric = evaluate.load("accuracy")
-
-            logits, labels = eval_pred
-            predictions = np.argmax(logits, axis=-1)
-            return metric.compute(predictions=predictions, references=labels)
-
         trainer = HFTrainer(
             model=model,
             args=self.training_args,
             train_dataset=tokenized_datasets["train"],
             eval_dataset=tokenized_datasets["eval"],
             data_collator=data_collator,
-            # compute_metrics=compute_metrics,
         )
         trainer.train()
 

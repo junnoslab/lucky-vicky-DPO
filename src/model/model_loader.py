@@ -65,4 +65,5 @@ class ModelLoader:
         lora_model = get_peft_model(
             model=base_model, peft_config=config, adapter_name=adapter_name
         )
+        lora_model.print_trainable_parameters()
         return tokenizer, base_model, lora_model
