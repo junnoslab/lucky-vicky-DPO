@@ -23,7 +23,7 @@ class Trainer:
         self.training_args = TrainingArguments(
             output_dir=config.output_dir,
             evaluation_strategy="epoch",
-            num_train_epochs=5,
+            num_train_epochs=config.epochs,
             per_device_train_batch_size=config.per_device_train_batch_size,
             per_device_eval_batch_size=config.per_device_eval_batch_size,
             learning_rate=config.learning_rate,

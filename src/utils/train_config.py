@@ -53,6 +53,9 @@ class TrainConfig:
         self._eval_ratio = value
 
     # Train
+    epochs: Optional[int] = field(
+        default=3, metadata={"help": "the number of training epochs"}
+    )
     beta: Optional[float] = field(
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
