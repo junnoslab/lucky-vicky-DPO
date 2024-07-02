@@ -1238,7 +1238,7 @@ packages:
   name: lora
   version: 0.1.0
   path: .
-  sha256: 0beb9bacd5783f178433e119d2f0d328de30135eb205878d93398e5747f11b87
+  sha256: d5ab411a1ab0cec57edc656d54e725dbb86f4515596f287e00558fe928cd9205
   requires_dist:
   - setuptools
   - pre-commit

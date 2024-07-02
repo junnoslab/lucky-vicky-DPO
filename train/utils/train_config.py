@@ -33,11 +33,6 @@ class TrainConfig:
     )
 
     # Dataset
-    dataset_name: Optional[str] = field(
-        default="maywell/ko_Ultrafeedback_binarized",
-        metadata={"help": "name of the dataset"},
-    )
-
     _eval_ratio: Optional[float] = field(
         default=0.2, metadata={"help": "slice percentage for eval dataset"}
     )

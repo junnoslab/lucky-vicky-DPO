@@ -8,6 +8,7 @@ from transformers import (
 import torch
 
 from train.model import Models
+from train.utils import SYSTEM_PROMPT
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -34,15 +35,16 @@ if __name__ == "__main__":
         model=base_model, model_id=adapter_path, adapter_name="lora", config=peft_config
     )
     adapted_model.set_adapter("lora")
+    adapted_model.to(device)
+    adapted_model.eval()
     print(adapted_model.active_adapter)
 
-    _pipeline = pipeline("text-generation", model=adapted_model, tokenizer=tokenizer)
-    _pipeline.model.eval().to(device)
-
-    messages = [{"role": "user", "content": "영화 예매를 잘못해서 표를 못 썼어."}]
-
-    prompt = _pipeline.tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
+    _pipeline = pipeline(
+        "text-generation",
+        model=adapted_model,
+        tokenizer=tokenizer,
+        model_kwargs={"torch_dtype": torch.bfloat16},
+        device_map="auto",
     )
 
     terminators = [
@@ -50,13 +52,25 @@ if __name__ == "__main__":
         _pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>"),
     ]
 
-    outputs = _pipeline(
-        prompt,
-        max_new_tokens=2048,
-        eos_token_id=terminators,
-        do_sample=True,
-        temperature=0.6,
-        top_p=0.9,
-    )
+    while True:
+        text = input("☘️ ")
 
-    print(outputs[0]["generated_text"])
+        prompt = _pipeline.tokenizer.apply_chat_template(
+            [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": text},
+            ],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+
+        outputs = _pipeline(
+            prompt,
+            max_new_tokens=2048,
+            eos_token_id=terminators,
+            do_sample=True,
+            temperature=0.6,
+            top_p=0.9,
+        )
+
+        print(outputs[0]["generated_text"])

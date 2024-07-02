@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 
 from ..data import DataCollator
-from ..utils import TrainConfig
+from ..utils import TrainConfig, SYSTEM_PROMPT
 
 
 class Trainer:
@@ -42,6 +42,10 @@ class Trainer:
         model = model.to(self.device)
 
         # Setup dataset
+        def add_system_prompt(examples: Dataset):
+            examples["input"] = f"{SYSTEM_PROMPT} \ninput: {examples["input"]}"
+            return examples
+
         def tokenize_function(examples: Dataset):
             return tokenizer(
                 examples["input"],
@@ -51,7 +55,8 @@ class Trainer:
                 truncation=True,
             )
 
-        tokenized_datasets = dataset.map(tokenize_function, batched=True)
+        prompted_datasets = dataset.map(add_system_prompt)
+        tokenized_datasets = prompted_datasets.map(tokenize_function, batched=True)
 
         data_collator = DataCollator(tokenizer=tokenizer, device=self.device)
 
