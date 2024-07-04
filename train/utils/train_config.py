@@ -34,7 +34,7 @@ class TrainConfig:
 
     # Dataset
     _eval_ratio: Optional[float] = field(
-        default=0.2, metadata={"help": "slice percentage for eval dataset"}
+        default=0.1, metadata={"help": "slice percentage for eval dataset"}
     )
 
     @property
@@ -46,6 +46,20 @@ class TrainConfig:
         if value is not None and (value < 0.0 or value > 1.0):
             raise ValueError("eval_ratio must be between 0.0 and 1.0")
         self._eval_ratio = value
+
+    _test_ratio: Optional[float] = field(
+        default=0.1, metadata={"help": "slice percentage for test dataset"}
+    )
+
+    @property
+    def test_ratio(self) -> Optional[float]:
+        return self._test_ratio
+
+    @test_ratio.setter
+    def test_ratio(self, value: Optional[float]):
+        if value is not None and (value < 0.0 or value > 1.0):
+            raise ValueError("test_ratio must be between 0.0 and 1.0")
+        self._test_ratio = value
 
     # Train
     epochs: Optional[int] = field(

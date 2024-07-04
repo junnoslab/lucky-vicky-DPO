@@ -29,6 +29,8 @@ class Runner:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         _LOGGER.info(f"Using device: {device}")
 
+        _config = self.config
+
         model_loader = ModelLoader()
 
         # 1. Load a LoraModel (Use LoraConfig)
@@ -37,7 +39,9 @@ class Runner:
         )
 
         # 2. Load a dataset
-        data_loader = DataLoader()
+        data_loader = DataLoader(
+            eval_ratio=_config.eval_ratio, test_ratio=_config.test_ratio
+        )
 
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
