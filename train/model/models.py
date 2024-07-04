@@ -19,3 +19,7 @@ class Models(StrEnum):
             return torch.bfloat16
         else:
             return torch.float32
+
+    @property
+    def name(self) -> str:
+        return self.value
