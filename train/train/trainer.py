@@ -42,21 +42,19 @@ class Trainer:
         model = model.to(self.device)
 
         # Setup dataset
-        def add_system_prompt(examples: Dataset):
-            examples["input"] = f"{SYSTEM_PROMPT} \ninput: {examples["input"]}"
-            return examples
-
-        def tokenize_function(examples: Dataset):
+        def preprocess(dataset: Dataset):
+            dataset["input"] = (
+                f"{SYSTEM_PROMPT} \n###Input: {dataset["input"]} \n###Output:{dataset["output"]}"
+            )
             return tokenizer(
-                examples["input"],
-                text_target=examples["output"],
+                dataset["input"],
+                text_target=dataset["output"],
                 padding="max_length",
                 max_length=512,
                 truncation=True,
             )
 
-        prompted_datasets = dataset.map(add_system_prompt)
-        tokenized_datasets = prompted_datasets.map(tokenize_function, batched=True)
+        tokenized_datasets = dataset.map(preprocess, batch_size=True)
 
         data_collator = DataCollator(tokenizer=tokenizer, device=self.device)
 
