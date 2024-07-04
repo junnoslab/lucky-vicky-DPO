@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Project for a LoRA training."
 authors = [{ name = "Junnos ", email = "junnos.dev@gmail.com" }]
 requires-python = ">= 3.11"
-dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "transformers==4.38.2", "accelerate", "bitsandbytes", "scikit-learn", "wandb", "trl"]
+dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "accelerate", "bitsandbytes", "scikit-learn", "wandb", "trl", "transformers==4.40.0"]
 
 [build-system]
 requires = ["setuptools"]
@@ -26,6 +26,8 @@ LoRA = { path = ".", editable = true }
 [tool.pixi.tasks]
 train = { cmd = ["python", "-m", "train"] }
 t = { depends-on = ["train"] }
+train_ready = { cmd = ["python", "-m", "train", "--is_ready_for_training", "True"] }
+tr = { depends-on = ["train_ready"] }
 train_epochs = { cmd = ["python", "-m", "train", "--epochs", "$EPOCHS"], env = { EPOCHS = "5" } }
 te = { depends-on = ["train_epochs"] }
 infer = { cmd = ["python", "-m", "infer"] }
