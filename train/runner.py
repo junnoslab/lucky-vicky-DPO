@@ -1,4 +1,5 @@
 import logging
+import os
 
 import torch
 import wandb
@@ -17,13 +18,16 @@ class Runner:
     def __init__(self, config_args: TrainConfig):
         self.config = config_args
 
-        wandb.init(
-            project="lora",
-            config={
-                "learning_rate": self.config.learning_rate,
-                "epochs": self.config.epochs,
-            },
-        )
+        if config_args.is_ready_for_training:
+            wandb.init(
+                project="lora",
+                config={
+                    "learning_rate": config_args.learning_rate,
+                    "epochs": config_args.epochs,
+                },
+            )
+        else:
+            os.environ["WANDB_MODE"] = "disabled"
 
     def run(self):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
