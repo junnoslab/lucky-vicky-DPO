@@ -34,7 +34,7 @@ infer = { cmd = ["python", "-m", "infer"] }
 i = { depends-on = ["infer"] }
 
 [tool.pixi.dependencies]
-python = ">=3.12.4,<3.13"
+python = ">=3.11,<3.12"
 
 [tool.pyright]
 venv = "default"
