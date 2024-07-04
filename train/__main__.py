@@ -1,6 +1,8 @@
 import logging
+import os
 
 from transformers import HfArgumentParser
+import torch
 
 from .runner import Runner
 from .utils import TrainConfig
@@ -16,6 +18,9 @@ def main():
     _LOGGER.log(
         level=999, msg=f"Logger level set to {logging.getLevelName(args.logger_level)}"
     )
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+    torch.multiprocessing.set_start_method("spawn")
 
     runner = Runner(args)
     runner.run()

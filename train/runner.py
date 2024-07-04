@@ -31,6 +31,8 @@ class Runner:
 
     def run(self):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if device == "cuda":
+            torch.cuda.empty_cache()
         _LOGGER.info(f"Using device: {device}")
 
         _config = self.config

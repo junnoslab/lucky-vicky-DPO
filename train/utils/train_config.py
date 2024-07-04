@@ -11,6 +11,13 @@ class TrainConfig:
         default=logging.INFO, metadata={"help": "logger level"}
     )
 
+    is_ready_for_training: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help": "whether the model is ready for training so it can be logged in wandb"
+        },
+    )
+
     # Model
     model_name_or_path: Optional[str] = field(
         default="MLP-KTLim/llama-3-Korean-Bllossom-8B",
