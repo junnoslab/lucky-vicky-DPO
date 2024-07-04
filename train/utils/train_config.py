@@ -69,7 +69,7 @@ class TrainConfig:
         self._test_ratio = value
 
     dataloader_num_workers: Optional[int] = field(
-        default=2, metadata={"help": "the number of dataloader workers"}
+        default=4, metadata={"help": "the number of dataloader workers"}
     )
 
     # Train

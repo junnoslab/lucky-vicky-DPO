@@ -16,6 +16,6 @@ class Models(StrEnum):
         if self == Models.BLOSSOM_8B:
             return torch.float16
         if self == Models.EEVE_10_8B:
-            return torch.bfloat16
+            return torch.float16
         else:
             return torch.float32

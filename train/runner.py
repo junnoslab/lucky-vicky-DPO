@@ -52,7 +52,7 @@ class Runner:
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        trainer = Trainer(config=_config, device=device)
+        trainer = Trainer(config=_config)
         trainer.train(
             model=lora_model,
             tokenizer=tokenizer,
