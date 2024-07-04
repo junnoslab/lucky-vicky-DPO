@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import get_peft_model, LoraModel, LoraConfig
 
 from .models import Models
-from ..utils import TrainConfig
+from ..utils import TrainConfig, DEVICE_MAP
 
 
 class ModelLoader:
@@ -31,13 +31,14 @@ class ModelLoader:
         Returns:
             tuple[AutoTokenizer, AutoModelForCausalLM]: A tuple containing the tokenizer and model instances.
         """
-        _tokenizer = AutoTokenizer.from_pretrained(model.value)
+        _tokenizer = AutoTokenizer.from_pretrained(model.value, device_map=DEVICE_MAP)
         bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         _model = AutoModelForCausalLM.from_pretrained(
             model.value,
             torch_dtype=model.dtype,
             quantization_config=bnb_config,
             low_cpu_mem_usage=True,
+            device_map=DEVICE_MAP,
         )
         return _tokenizer, _model
 

@@ -41,7 +41,7 @@ class TrainConfig:
 
     # Dataset
     _eval_ratio: Optional[float] = field(
-        default=0.1, metadata={"help": "slice percentage for eval dataset"}
+        default=0.0, metadata={"help": "slice percentage for eval dataset"}
     )
 
     @property
@@ -55,7 +55,7 @@ class TrainConfig:
         self._eval_ratio = value
 
     _test_ratio: Optional[float] = field(
-        default=0.1, metadata={"help": "slice percentage for test dataset"}
+        default=0.0, metadata={"help": "slice percentage for test dataset"}
     )
 
     @property
@@ -80,10 +80,10 @@ class TrainConfig:
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
     per_device_train_batch_size: Optional[int] = field(
-        default=1, metadata={"help": "train batch size per device"}
+        default=2, metadata={"help": "train batch size per device"}
     )
     per_device_eval_batch_size: Optional[int] = field(
-        default=1, metadata={"help": "eval batch size per device"}
+        default=2, metadata={"help": "eval batch size per device"}
     )
     learning_rate: Optional[float] = field(
         default=5e-4, metadata={"help": "optimizer learning rate"}

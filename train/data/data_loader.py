@@ -19,6 +19,8 @@ class DataLoader:
 
         if _ext == "parquet":
             _dataset = Dataset.from_parquet(dataset.path)
+            if self.train_ratio == 1.0:
+                return DatasetDict({"train": _dataset})
             return self.__split(
                 _dataset,
                 split_ratio=(self.train_ratio, self.eval_ratio, self.test_ratio),

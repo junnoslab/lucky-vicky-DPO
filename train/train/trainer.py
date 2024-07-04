@@ -8,7 +8,6 @@ from transformers import (
 import torch
 import torch.nn as nn
 
-from ..data import DataCollator
 from ..utils import TrainConfig, SYSTEM_PROMPT
 
 
@@ -39,13 +38,10 @@ class Trainer:
         tokenizer: PreTrainedTokenizerBase,
         dataset: Dataset,
     ) -> PreTrainedModel:
-        # Setup model
-        model = model.to(self.device)
-
         # Setup dataset
         def preprocess(dataset: Dataset):
             dataset["input"] = (
-                f"{SYSTEM_PROMPT} \n###Input: {dataset["input"]} \n###Output:{dataset["output"]}"
+                f"{SYSTEM_PROMPT} \n###Input: {dataset['input']} \n###Output:{dataset['output']}"
             )
             return tokenizer(
                 dataset["input"],
@@ -58,15 +54,12 @@ class Trainer:
         tokenized_datasets = dataset.map(preprocess, batch_size=True)
 
         # https://github.com/KoJLabs/StrategicDataOrdering/blob/dbdabc2ee523e5f42b7b2cffa74d731a8df7281f/train.py#L117C5-L117C13
-        # 참고
-        data_collator = DataCollator(tokenizer=tokenizer, device=self.device)
+        # DataCollator 참고
 
         trainer = HFTrainer(
             model=model,
             args=self.training_args,
             train_dataset=tokenized_datasets["train"],
-            eval_dataset=tokenized_datasets["eval"],
-            data_collator=data_collator,
         )
         trainer.train()
 

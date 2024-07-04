@@ -1,3 +1,5 @@
+DEVICE_MAP: str = "balanced"
+
 SYSTEM_PROMPT: str = """
 ###Instruction:
 다음과 같은 형식으로 불안하거나 불행한 일을 표현하는 문장을 긍정적인 표현으로 변환해주세요.
