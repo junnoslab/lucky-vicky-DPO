@@ -28,6 +28,7 @@ class Trainer:
             lr_scheduler_type=config.lr_scheduler_type,
             gradient_accumulation_steps=config.gradient_accumulation_steps,
             dataloader_pin_memory=False,
+            dataloader_num_workers=config.dataloader_num_workers,
             save_steps=config.save_steps,
             logging_steps=10,
         )
@@ -56,6 +57,8 @@ class Trainer:
 
         tokenized_datasets = dataset.map(preprocess, batch_size=True)
 
+        # https://github.com/KoJLabs/StrategicDataOrdering/blob/dbdabc2ee523e5f42b7b2cffa74d731a8df7281f/train.py#L117C5-L117C13
+        # 참고
         data_collator = DataCollator(tokenizer=tokenizer, device=self.device)
 
         trainer = HFTrainer(

@@ -68,6 +68,10 @@ class TrainConfig:
             raise ValueError("test_ratio must be between 0.0 and 1.0")
         self._test_ratio = value
 
+    dataloader_num_workers: Optional[int] = field(
+        default=2, metadata={"help": "the number of dataloader workers"}
+    )
+
     # Train
     epochs: Optional[int] = field(
         default=3, metadata={"help": "the number of training epochs"}
@@ -76,10 +80,10 @@ class TrainConfig:
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
     per_device_train_batch_size: Optional[int] = field(
-        default=2, metadata={"help": "train batch size per device"}
+        default=1, metadata={"help": "train batch size per device"}
     )
     per_device_eval_batch_size: Optional[int] = field(
-        default=2, metadata={"help": "eval batch size per device"}
+        default=1, metadata={"help": "eval batch size per device"}
     )
     learning_rate: Optional[float] = field(
         default=5e-4, metadata={"help": "optimizer learning rate"}
