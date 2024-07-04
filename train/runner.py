@@ -35,7 +35,7 @@ class Runner:
 
         # 1. Load a LoraModel (Use LoraConfig)
         tokenizer, base_model, lora_model = model_loader.load_lora_model(
-            Models.BLOSSOM, training_config=self.config
+            Models.EEVE_10_8B, training_config=_config
         )
 
         # 2. Load a dataset
@@ -46,7 +46,7 @@ class Runner:
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        trainer = Trainer(config=self.config, device=device)
+        trainer = Trainer(config=_config, device=device)
         trainer.train(
             model=lora_model,
             tokenizer=tokenizer,
