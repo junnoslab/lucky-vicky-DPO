@@ -13,7 +13,7 @@ from train.utils import SYSTEM_PROMPT
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model_name = Models.BLOSSOM.value
+    model_name = Models.EEVE_10_8B.value
 
     bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     base_model = AutoModelForCausalLM.from_pretrained(
