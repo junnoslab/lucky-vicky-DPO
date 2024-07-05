@@ -37,6 +37,8 @@ if __name__ == "__main__":
         model_name, trust_remote_code=True, device_map=_DEVICE_MAP
     )
     tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.add_tokens(["###Input:", "###Output:", "###Instruction:", "###Example:"])
+    base_model.resize_token_embeddings(len(tokenizer))
 
     adapter_path = "res/lora"
 
@@ -50,6 +52,7 @@ if __name__ == "__main__":
         is_trainable=False,
         device_map=_DEVICE_MAP,
     )
+    del base_model
     adapted_model.set_adapter("lora")
     _LOGGER.info(f"Using adapter: {adapted_model.active_adapter}")
 
