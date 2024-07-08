@@ -87,6 +87,6 @@ class Trainer:
         )
         trainer.train()
 
-        trainer.save_model(self.training_args.output_dir)
+        trainer.save_model("res/llama-3-Korean-Bllossom-8B")
 
         return trainer.model
