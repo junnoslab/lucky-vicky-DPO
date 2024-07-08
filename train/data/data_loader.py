@@ -1,6 +1,6 @@
 import logging
 
-from datasets import Dataset, DatasetDict
+from datasets import Dataset, DatasetDict, load_dataset as load_hf_dataset
 
 from .datasets import Datasets
 
@@ -13,11 +13,22 @@ class DataLoader:
         self.eval_ratio = eval_ratio
         self.test_ratio = test_ratio
 
-    def load_dataset(self, dataset: Datasets) -> DatasetDict:
-        _ext = dataset.path.split(".")[-1]
-        _LOGGER.info(f"Loading dataset from {dataset.path}, ext: {_ext}")
+    def load_dataset(self, dataset: Datasets) -> DatasetDict | Dataset:
+        _path_components = dataset.path.split(".")
+        _LOGGER.info(f"Loading dataset: {dataset}")
 
-        if _ext == "parquet":
+        if len(_path_components) == 1:  # HF ID
+            _dataset = load_hf_dataset(dataset.value)
+            return _dataset
+        elif len(_path_components) == 2:  # Local path
+            _ext = _path_components[-1]
+            _dataset = self.__load_dataset_from_local(dataset, ext=_ext)
+            return _dataset
+        else:
+            raise ValueError(f"Invalid dataset path: {dataset}")
+
+    def __load_dataset_from_local(self, dataset: Datasets, ext: str) -> Dataset:
+        if ext == "parquet":
             _dataset = Dataset.from_parquet(dataset.path)
             if self.train_ratio == 1.0:
                 return DatasetDict({"train": _dataset})
@@ -25,8 +36,6 @@ class DataLoader:
                 _dataset,
                 split_ratio=(self.train_ratio, self.eval_ratio, self.test_ratio),
             )
-        else:
-            raise ValueError("Not supported file.")
 
     def __split(
         self,
