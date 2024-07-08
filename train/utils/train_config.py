@@ -19,8 +19,8 @@ class TrainConfig:
     )
 
     # Model
-    model_name_or_path: Optional[str] = field(
-        default="MLP-KTLim/llama-3-Korean-Bllossom-8B",
+    model_name: Optional[str] = field(
+        default="yanolja/EEVE-Korean-10.8B-v1.0",
         metadata={"help": "the location of the SFT model name or path"},
     )
     rank: Optional[int] = field(

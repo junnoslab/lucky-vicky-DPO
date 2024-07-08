@@ -37,11 +37,12 @@ class Runner:
 
         _config = self.config
 
+        model = Models.from_value(_config.model_name)
         model_loader = ModelLoader()
 
         # 1. Load a LoraModel (Use LoraConfig)
         tokenizer, base_model, lora_config = model_loader.load_lora_model(
-            Models.EEVE_10_8B, training_config=_config
+            model, training_config=_config
         )
 
         # 2. Load a dataset
