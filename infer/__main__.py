@@ -11,7 +11,7 @@ from transformers import (
 import torch
 
 from train.model import Models
-from train.utils.templates import INSTRUCTION_TEMPLATE
+from train.utils.templates import PROMPT_TEMPLATE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,8 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model_name = Models.EEVE_10_8B.value
+    model = Models.BLOSSOM_8B
+    model_name = model.value
 
     bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     base_model = AutoModelForCausalLM.from_pretrained(
@@ -33,14 +34,9 @@ if __name__ == "__main__":
     )
     base_model.config.use_cache = False
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name, trust_remote_code=True, device_map=_DEVICE_MAP
-    )
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.add_tokens(["###Input:", "###Output:", "###Instruction:", "###Example:"])
-    base_model.resize_token_embeddings(len(tokenizer))
+    tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
 
-    adapter_path = "res/lora"
+    adapter_path = f"res/{model_name.split('/')[-1]}"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
 
@@ -67,7 +63,6 @@ if __name__ == "__main__":
         "text-generation",
         model=compiled_model,
         tokenizer=tokenizer,
-        model_kwargs={"torch_dtype": torch.bfloat16},
         device_map=_DEVICE_MAP,
     )
 
@@ -81,19 +76,20 @@ if __name__ == "__main__":
 
         start = time.time()
 
-        instruction = INSTRUCTION_TEMPLATE.format(QUESTION=text, ANSWER="")
+        instruction = PROMPT_TEMPLATE.format(QUESTION=text, ANSWER="")
+        print(instruction)
 
-        prompt = adapted_pipeline.tokenizer.apply_chat_template(
-            [
-                {"role": "system", "content": instruction},
-                {"role": "user", "content": text},
-            ],
-            tokenize=False,
-            add_generation_prompt=True,
-        )
+        # prompt = adapted_pipeline.tokenizer.apply_chat_template(
+        #     [
+        #         {"role": "system", "content": instruction},
+        #         {"role": "user", "content": text},
+        #     ],
+        #     tokenize=False,
+        #     add_generation_prompt=True,
+        # )
 
         adapted_outputs = adapted_pipeline(
-            prompt,
+            instruction,
             max_new_tokens=256,
             eos_token_id=terminators,
             do_sample=True,
@@ -103,5 +99,5 @@ if __name__ == "__main__":
 
         end = time.time()
 
-        _LOGGER.info(adapted_outputs[0]["generated_text"][len(prompt) :])
-        _LOGGER.info(f"Inference time: {end - start:.5f} sec.")
+        _LOGGER.info(adapted_outputs[0]["generated_text"])
+        _LOGGER.info(f"Inference time: {end - start:.2f} sec.")

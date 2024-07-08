@@ -27,6 +27,9 @@ PROMPT = PROMPT_TEMPLATE.format(
     QUESTION="내 앞에서 50% 세일하는 옷이 품절됐어", ANSWER=""
 )
 
+tokenizer.add_tokens([INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE])
+model.resize_token_embeddings(len(tokenizer))
+
 
 def print_tokens_with_ids(txt):
     tokens = tokenizer.tokenize(txt, add_special_tokens=False)

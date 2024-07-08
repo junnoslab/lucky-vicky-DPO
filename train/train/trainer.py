@@ -32,10 +32,15 @@ class Trainer:
             lr_scheduler_type=config.lr_scheduler_type,
             optim=config.optimizer_type,
             gradient_accumulation_steps=config.gradient_accumulation_steps,
+            gradient_checkpointing=True,
+            max_grad_norm=0.3,
+            warmup_ratio=config.warmup_ratio,
             dataloader_pin_memory=False,
             dataloader_num_workers=config.dataloader_num_workers,
             evaluation_strategy="no",
+            save_strategy="steps",
             save_steps=config.save_steps,
+            save_total_limit=2,
             logging_strategy="steps",
             logging_steps=5,
         )
@@ -82,6 +87,6 @@ class Trainer:
         )
         trainer.train()
 
-        trainer.save_model(self.training_args.output_dir)
+        trainer.save_model("res/llama-3-Korean-Bllossom-8B")
 
         return trainer.model
