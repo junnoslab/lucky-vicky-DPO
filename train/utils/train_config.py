@@ -80,10 +80,13 @@ class TrainConfig:
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
     per_device_train_batch_size: Optional[int] = field(
-        default=2, metadata={"help": "train batch size per device"}
+        default=4, metadata={"help": "train batch size per device"}
     )
     per_device_eval_batch_size: Optional[int] = field(
         default=2, metadata={"help": "eval batch size per device"}
+    )
+    max_seq_length: Optional[int] = field(
+        default=4096, metadata={"help": "the maximum sequence length"}
     )
     learning_rate: Optional[float] = field(
         default=5e-4, metadata={"help": "optimizer learning rate"}
@@ -95,13 +98,7 @@ class TrainConfig:
         default=50, metadata={"help": "the number of warmup steps"}
     )
     optimizer_type: Optional[str] = field(
-        default="paged_adamw_32bit", metadata={"help": "the optimizer type"}
-    )
-    max_prompt_length: Optional[int] = field(
-        default=512, metadata={"help": "the maximum prompt length"}
-    )
-    max_length: Optional[int] = field(
-        default=1024, metadata={"help": "the maximum sequence length"}
+        default="paged_adamw_8bit", metadata={"help": "the optimizer type"}
     )
     eval_steps: Optional[int] = field(
         default=300, metadata={"help": "the evaluation frequency"}

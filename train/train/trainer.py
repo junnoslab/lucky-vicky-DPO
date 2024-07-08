@@ -1,36 +1,43 @@
 from datasets import Dataset
+from peft.config import PeftConfig
 from transformers import (
-    Trainer as HFTrainer,
-    TrainingArguments,
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
+from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer
 import torch.nn as nn
 
-from ..utils import TrainConfig, SYSTEM_PROMPT
+from ..utils import TrainConfig
+from ..utils.templates import (
+    INSTRUCTION_TEMPLATE,
+    QUESTION_TEMPLATE,
+    ANSWER_TEMPLATE,
+    PROMPT_TEMPLATE,
+)
+
+_TEMPLATES = [INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE]
 
 
 class Trainer:
-    training_args: TrainingArguments
+    training_args: SFTConfig
 
     def __init__(self, config: TrainConfig):
-        self.training_args = TrainingArguments(
+        self.training_args = SFTConfig(
             output_dir=config.output_dir,
             num_train_epochs=config.epochs,
             per_device_train_batch_size=config.per_device_train_batch_size,
             per_device_eval_batch_size=config.per_device_eval_batch_size,
+            max_seq_length=config.max_seq_length,
             learning_rate=config.learning_rate,
             lr_scheduler_type=config.lr_scheduler_type,
             optim=config.optimizer_type,
             gradient_accumulation_steps=config.gradient_accumulation_steps,
             dataloader_pin_memory=False,
             dataloader_num_workers=config.dataloader_num_workers,
-            bf16=True,
             evaluation_strategy="no",
             save_steps=config.save_steps,
             logging_strategy="steps",
-            logging_steps=10,
-            report_to="wandb",
+            logging_steps=5,
         )
 
     def train(
@@ -38,40 +45,43 @@ class Trainer:
         model: nn.Module,
         tokenizer: PreTrainedTokenizerBase,
         dataset: Dataset,
+        peft_config: PeftConfig,
     ) -> PreTrainedModel:
         # Setup tokenizer
-        tokenizer.add_tokens(
-            ["###Input:", "###Output:", "###Instruction:", "###Example:"]
+        tokenizer.padding_side = "right"
+
+        def format_prompt(dataset: Dataset):
+            prompts = []
+            for i in range(len(dataset["input"])):
+                prompt = PROMPT_TEMPLATE.format(
+                    QUESTION=dataset["input"][i], ANSWER=dataset["output"][i]
+                )
+                prompts.append(prompt)
+            return prompts
+
+        instruction_template_ids = tokenizer.encode(
+            INSTRUCTION_TEMPLATE, add_special_tokens=False
+        )[2:]
+        response_template_ids = tokenizer.encode(
+            ANSWER_TEMPLATE, add_special_tokens=False
+        )[2:]
+
+        data_collator = DataCollatorForCompletionOnlyLM(
+            instruction_template=instruction_template_ids,
+            response_template=response_template_ids,
+            tokenizer=tokenizer,
         )
-        model.resize_token_embeddings(len(tokenizer))
 
-        # Setup dataset
-        def preprocess(dataset: Dataset):
-            dataset["input"] = (
-                f"{SYSTEM_PROMPT} \n###Input: {dataset['input']} \n###Output:{dataset['output']}"
-            )
-            return tokenizer(
-                dataset["input"],
-                text_target=dataset["output"],
-                padding="max_length",
-                max_length=512,
-                truncation=True,
-            )
-
-        tokenized_datasets = dataset.map(preprocess, batch_size=True)
-
-        # https://github.com/KoJLabs/StrategicDataOrdering/blob/dbdabc2ee523e5f42b7b2cffa74d731a8df7281f/train.py#L117C5-L117C13
-        # DataCollator 참고
-
-        trainer = HFTrainer(
+        trainer = SFTTrainer(
             model=model,
+            train_dataset=dataset["train"],
             args=self.training_args,
-            train_dataset=tokenized_datasets["train"],
+            formatting_func=format_prompt,
+            data_collator=data_collator,
+            peft_config=peft_config,
         )
         trainer.train()
 
-        trainer.model.save_pretrained(self.training_args.output_dir)
         trainer.save_model(self.training_args.output_dir)
-        trainer.model.config.save_pretrained(self.training_args.output_dir)
 
         return trainer.model

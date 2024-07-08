@@ -11,7 +11,7 @@ from transformers import (
 import torch
 
 from train.model import Models
-from train.utils import SYSTEM_PROMPT
+from train.utils.templates import INSTRUCTION_TEMPLATE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -81,9 +81,11 @@ if __name__ == "__main__":
 
         start = time.time()
 
+        instruction = INSTRUCTION_TEMPLATE.format(QUESTION=text, ANSWER="")
+
         prompt = adapted_pipeline.tokenizer.apply_chat_template(
             [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": instruction},
                 {"role": "user", "content": text},
             ],
             tokenize=False,
