@@ -40,7 +40,7 @@ class Runner:
         model_loader = ModelLoader()
 
         # 1. Load a LoraModel (Use LoraConfig)
-        tokenizer, base_model, lora_model = model_loader.load_lora_model(
+        tokenizer, base_model, lora_config = model_loader.load_lora_model(
             Models.EEVE_10_8B, training_config=_config
         )
 
@@ -54,9 +54,10 @@ class Runner:
         # 3. Train (Use TrainingArguments)
         trainer = Trainer(config=_config)
         trainer.train(
-            model=lora_model,
+            model=base_model,
             tokenizer=tokenizer,
             dataset=dataset,
+            peft_config=lora_config,
         )
 
         wandb.finish()
