@@ -27,7 +27,7 @@ class TrainConfig:
         default=32, metadata={"help": "Lora attention dimension (the “rank”)"}
     )
     lora_alpha: Optional[float] = field(
-        default=32, metadata={"help": "alpha parameter for Lora scaling"}
+        default=64, metadata={"help": "alpha parameter for Lora scaling"}
     )
     lora_dropout: Optional[float] = field(
         default=0.1, metadata={"help": "dropout probability for Lora layers"}
@@ -69,24 +69,24 @@ class TrainConfig:
         self._test_ratio = value
 
     dataloader_num_workers: Optional[int] = field(
-        default=4, metadata={"help": "the number of dataloader workers"}
+        default=8, metadata={"help": "the number of dataloader workers"}
     )
 
     # Train
     epochs: Optional[int] = field(
-        default=3, metadata={"help": "the number of training epochs"}
+        default=2, metadata={"help": "the number of training epochs"}
     )
     beta: Optional[float] = field(
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}
     )
     per_device_train_batch_size: Optional[int] = field(
-        default=4, metadata={"help": "train batch size per device"}
+        default=8, metadata={"help": "train batch size per device"}
     )
     per_device_eval_batch_size: Optional[int] = field(
         default=2, metadata={"help": "eval batch size per device"}
     )
     max_seq_length: Optional[int] = field(
-        default=4096, metadata={"help": "the maximum sequence length"}
+        default=2048, metadata={"help": "the maximum sequence length"}
     )
     learning_rate: Optional[float] = field(
         default=5e-4, metadata={"help": "optimizer learning rate"}
@@ -94,14 +94,14 @@ class TrainConfig:
     lr_scheduler_type: Optional[str] = field(
         default="cosine", metadata={"help": "the lr scheduler type"}
     )
-    warmup_steps: Optional[int] = field(
-        default=50, metadata={"help": "the number of warmup steps"}
+    warmup_ratio: Optional[float] = field(
+        default=0.03, metadata={"help": "the ratio of warmup steps"}
     )
     optimizer_type: Optional[str] = field(
         default="paged_adamw_8bit", metadata={"help": "the optimizer type"}
     )
     eval_steps: Optional[int] = field(
-        default=300, metadata={"help": "the evaluation frequency"}
+        default=20, metadata={"help": "the evaluation frequency"}
     )
 
     gradient_accumulation_steps: Optional[int] = field(
@@ -109,7 +109,7 @@ class TrainConfig:
     )
 
     save_steps: Optional[int] = field(
-        default=300, metadata={"help": "the saving frequency"}
+        default=20, metadata={"help": "the saving frequency"}
     )
 
     output_dir: Optional[str] = field(
