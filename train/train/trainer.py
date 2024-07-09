@@ -6,7 +6,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer
+from trl import DataCollatorForCompletionOnlyLM, DPOConfig, DPOTrainer
 import torch.nn as nn
 
 from ..utils import TrainConfig
@@ -21,15 +21,14 @@ _TEMPLATES = [INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE]
 
 
 class Trainer:
-    training_args: SFTConfig
+    training_args: DPOConfig
 
     def __init__(self, config: TrainConfig):
-        self.training_args = SFTConfig(
+        self.training_args = DPOConfig(
             output_dir=config.output_dir,
             num_train_epochs=config.epochs,
             per_device_train_batch_size=config.per_device_train_batch_size,
             per_device_eval_batch_size=config.per_device_eval_batch_size,
-            max_seq_length=config.max_seq_length,
             learning_rate=config.learning_rate,
             lr_scheduler_type=config.lr_scheduler_type,
             optim=config.optimizer_type,
@@ -41,7 +40,6 @@ class Trainer:
             dataloader_num_workers=config.dataloader_num_workers,
             evaluation_strategy="no",
             save_strategy="steps",
-            save_steps=config.save_steps,
             save_total_limit=2,
             logging_strategy="steps",
             logging_steps=5,
@@ -57,14 +55,15 @@ class Trainer:
         # Setup tokenizer
         tokenizer.padding_side = "right"
 
-        def format_prompt(dataset: Dataset):
-            prompts = []
-            for i in range(len(dataset["input"])):
-                prompt = PROMPT_TEMPLATE.format(
-                    QUESTION=dataset["input"][i], ANSWER=dataset["output"][i]
-                )
-                prompts.append(prompt)
-            return prompts
+        # TODO: Format dataset prompts
+        # def format_prompt(dataset: Dataset):
+        #     prompts = []
+        #     for i in range(len(dataset["input"])):
+        #         prompt = PROMPT_TEMPLATE.format(
+        #             QUESTION=dataset["input"][i], ANSWER=dataset["output"][i]
+        #         )
+        #         prompts.append(prompt)
+        #     return prompts
 
         instruction_template_ids = tokenizer.encode(
             INSTRUCTION_TEMPLATE, add_special_tokens=False
@@ -79,11 +78,10 @@ class Trainer:
             tokenizer=tokenizer,
         )
 
-        trainer = SFTTrainer(
+        trainer = DPOTrainer(
             model=model,
             train_dataset=dataset["train"],
             args=self.training_args,
-            formatting_func=format_prompt,
             data_collator=data_collator,
             peft_config=peft_config,
         )
