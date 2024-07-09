@@ -1,3 +1,5 @@
+import os
+
 from datasets import Dataset
 from peft.config import PeftConfig
 from transformers import (
@@ -87,6 +89,8 @@ class Trainer:
         )
         trainer.train()
 
-        trainer.save_model("res/llama-3-Korean-Bllossom-8B")
+        _model_name = model.config.name_or_path.split("/")[-1]
+        path = os.path.join(self.training_args.output_dir, _model_name)
+        trainer.save_model(path)
 
         return trainer.model
