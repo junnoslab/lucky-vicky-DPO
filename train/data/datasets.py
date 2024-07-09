@@ -6,7 +6,7 @@ from enum import StrEnum
 class Datasets(StrEnum):
     """Enum for dataset names."""
 
-    LUCKY_VICKY = "Junnos/luckyvicky"
+    LUCKY_VICKY = "Junnos/luckyvicky-DPO"
 
     @property
     def path(self) -> str:
