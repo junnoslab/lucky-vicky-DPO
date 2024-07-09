@@ -6,7 +6,8 @@ from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
     BitsAndBytesConfig,
-    pipeline,
+    GenerationConfig,
+    TextStreamer,
 )
 import torch
 
@@ -61,45 +62,44 @@ if __name__ == "__main__":
     )
     compiled_model.eval()
 
-    adapted_pipeline = pipeline(
-        "text-generation",
-        model=compiled_model,
-        tokenizer=tokenizer,
-        device_map=_DEVICE_MAP,
-    )
-
     terminators = [
-        adapted_pipeline.tokenizer.eos_token_id,
-        adapted_pipeline.tokenizer.convert_tokens_to_ids("<|im_end|>"),
+        tokenizer.eos_token_id,
+        tokenizer.convert_tokens_to_ids("<|im_end|>"),
     ]
 
+    config = GenerationConfig(
+        top_p=0.9,
+        temperature=0.6,
+        num_return_sequences=1,
+        do_sample=True,
+    )
+
     while True:
-        text = input("☘️ ")
+        text = input("> Lucky Vicky 😊☘️ ")
 
         start = time.time()
 
         instruction = PROMPT_TEMPLATE.format(QUESTION=text, ANSWER="")
-        print(instruction)
 
-        # prompt = adapted_pipeline.tokenizer.apply_chat_template(
-        #     [
-        #         {"role": "system", "content": instruction},
-        #         {"role": "user", "content": text},
-        #     ],
-        #     tokenize=False,
-        #     add_generation_prompt=True,
-        # )
+        streamer = TextStreamer(tokenizer)
 
-        adapted_outputs = adapted_pipeline(
-            instruction,
-            max_new_tokens=256,
+        input_ids = tokenizer(instruction, return_tensors="pt").input_ids.to(device)
+
+        outputs = compiled_model.generate(
+            input_ids,
+            generation_config=config,
+            streamer=streamer,
+            max_new_tokens=512,
             eos_token_id=terminators,
-            do_sample=True,
-            temperature=0.6,
-            top_p=0.9,
+        )
+
+        print(
+            tokenizer.decode(
+                outputs[0][input_ids.shape[-1] :], skip_special_tokens=True
+            )
         )
 
         end = time.time()
 
-        _LOGGER.info(adapted_outputs[0]["generated_text"])
+        # _LOGGER.info(adapted_outputs[0]["generated_text"][len(instruction):])
         _LOGGER.info(f"Inference time: {end - start:.2f} sec.")
