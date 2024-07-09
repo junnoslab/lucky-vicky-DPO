@@ -38,6 +38,7 @@ if __name__ == "__main__":
     base_model.config.use_cache = False
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
+    tokenizer.pad_token_id = tokenizer.eos_token_id
 
     adapter_path = f"res/{model_name.split('/')[-1]}"
 
@@ -80,12 +81,11 @@ if __name__ == "__main__":
         start = time.time()
 
         instruction = PROMPT_TEMPLATE.format(QUESTION=text, ANSWER="")
+        input_ids = tokenizer(instruction, return_tensors="pt").input_ids.to(device)
 
         streamer = TextStreamer(tokenizer)
 
-        input_ids = tokenizer(instruction, return_tensors="pt").input_ids.to(device)
-
-        outputs = compiled_model.generate(
+        _ = compiled_model.generate(
             input_ids,
             generation_config=config,
             streamer=streamer,
@@ -93,13 +93,5 @@ if __name__ == "__main__":
             eos_token_id=terminators,
         )
 
-        print(
-            tokenizer.decode(
-                outputs[0][input_ids.shape[-1] :], skip_special_tokens=True
-            )
-        )
-
         end = time.time()
-
-        # _LOGGER.info(adapted_outputs[0]["generated_text"][len(instruction):])
         _LOGGER.info(f"Inference time: {end - start:.2f} sec.")
