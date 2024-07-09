@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Project for a LoRA training."
 authors = [{ name = "Junnos ", email = "junnos.dev@gmail.com" }]
 requires-python = ">= 3.11"
-dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "accelerate", "bitsandbytes", "scikit-learn", "wandb", "trl", "transformers==4.40.0"]
+dependencies = ["setuptools", "pre-commit", "torch", "peft", "evaluate", "datasets", "accelerate", "bitsandbytes", "scikit-learn", "wandb", "trl", "transformers==4.40.0", "bump-my-version"]
 
 [build-system]
 requires = ["setuptools"]
@@ -118,3 +118,21 @@ docstring-code-format = false
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
+
+[tool.bumpversion]
+current_version = "0.1.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+ignore_missing_files = false
+tag = false
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+commit_args = "--no-verify"
