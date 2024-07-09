@@ -24,11 +24,11 @@ linux = "4.15.0"
 LoRA = { path = ".", editable = true }
 
 [tool.pixi.tasks]
-train = { cmd = ["python", "-m", "train"] }
-t = { depends-on = ["train"] }
-train_ready = { cmd = ["python", "-m", "train", "--is_ready_for_training", "True"] }
-tr = { depends-on = ["train_ready"] }
-train_epochs = { cmd = ["python", "-m", "train", "--epochs", "$EPOCHS"], env = { EPOCHS = "2" } }
+train-debug = { cmd = ["python", "-m", "train"] }
+td = { depends-on = ["train_debug"] }
+train = { cmd = ["python", "-m", "train", "--is_ready_for_training", "True"] }
+t = { depends-on = ["train_ready"] }
+train-epochs = { cmd = ["python", "-m", "train", "--epochs", "$EPOCHS"], env = { EPOCHS = "2" } }
 te = { depends-on = ["train_epochs"] }
 infer = { cmd = ["python", "-m", "infer"] }
 i = { depends-on = ["infer"] }
