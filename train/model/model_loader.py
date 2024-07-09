@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import LoraConfig
+import torch
 
 from .models import Models
 from ..utils import TrainConfig, DEVICE_MAP
@@ -34,7 +35,9 @@ class ModelLoader:
         _tokenizer = AutoTokenizer.from_pretrained(model.value, device_map=DEVICE_MAP)
         _tokenizer.padding_side = "right"
 
-        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16
+        )
         _model = AutoModelForCausalLM.from_pretrained(
             model.value,
             torch_dtype=model.dtype,

@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = Models.BLOSSOM_8B
+    model = Models.EEVE_10_8B
     model_name = model.value
 
     bnb_config = BitsAndBytesConfig(load_in_8bit=True)
