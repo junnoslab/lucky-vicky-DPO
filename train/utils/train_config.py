@@ -10,12 +10,14 @@ class TrainConfig:
     logger_level: Optional[int] = field(
         default=logging.INFO, metadata={"help": "logger level"}
     )
-
     is_ready_for_training: Optional[bool] = field(
         default=False,
         metadata={
             "help": "whether the model is ready for training so it can be logged in wandb"
         },
+    )
+    wandb_project_name: Optional[str] = field(
+        default="lora", metadata={"help": "wandb project name"}
     )
 
     # Model

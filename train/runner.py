@@ -20,7 +20,7 @@ class Runner:
 
         if config_args.is_ready_for_training:
             wandb.init(
-                project="lora",
+                project=config_args.wandb_project_name,
                 config={
                     "learning_rate": config_args.learning_rate,
                     "epochs": config_args.epochs,
