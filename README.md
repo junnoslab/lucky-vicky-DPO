@@ -9,3 +9,26 @@ Repository for PEFT Fine-Tuning with LoRA / QLoRA.
 ### Datasets
 - [Junnos/luckyvicky](https://huggingface.co/datasets/Junnos/luckyvicky)
 
+## How to start
+
+I used [pixi](https://prefix.dev/) for dependency & project manager.
+You can install pixi simply with command below
+```shell
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+Once pixi is installed, use `pixi shell` to enable venv from project's directory.
+```shell
+pixi shell
+```
+
+Or, you can simply run training or inference by using pixi's task commands
+```shell
+# t is short for train. They're basically same.
+pixi r t
+pixi r train
+
+# i is shortname for infer. They're same also.
+pixi r i
+pixi r infer
+```
