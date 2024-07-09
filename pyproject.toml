@@ -27,7 +27,7 @@ LoRA = { path = ".", editable = true }
 train-debug = { cmd = ["python", "-m", "train"] }
 td = { depends-on = ["train_debug"] }
 train = { cmd = ["python", "-m", "train", "--is_ready_for_training", "True"] }
-t = { depends-on = ["train_ready"] }
+t = { depends-on = ["train"] }
 train-epochs = { cmd = ["python", "-m", "train", "--epochs", "$EPOCHS"], env = { EPOCHS = "2" } }
 te = { depends-on = ["train_epochs"] }
 infer = { cmd = ["python", "-m", "infer"] }
