@@ -25,7 +25,9 @@ if __name__ == "__main__":
     model = Models.EEVE_10_8B
     model_name = model.value
 
-    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16
+    )
     base_model = AutoModelForCausalLM.from_pretrained(
         model_name,
         quantization_config=bnb_config,
