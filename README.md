@@ -24,11 +24,19 @@ pixi shell
 
 Or, you can simply run training or inference by using pixi's task commands
 ```shell
-# t is short for train. They're basically same.
+## Training
+# t is short-name for train.
+# wandb setup is required.
 pixi r t
 pixi r train
 
-# i is shortname for infer. They're same also.
+# td is short-name for train-debug.
+# Use this command to disable wandb.
+pixi r td
+pixi r train-debug
+
+## Inference
+# i is short-name for infer.
 pixi r i
 pixi r infer
 ```
