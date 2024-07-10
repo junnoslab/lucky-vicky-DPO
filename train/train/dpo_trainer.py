@@ -86,9 +86,9 @@ class DPOTrainer:
         # TODO: Format dataset prompts
         def format_prompt(dataset: Dataset):
             prompts = []
-            for i in range(len(dataset["input"])):
+            for i in range(len(dataset["prompt"])):
                 prompt = PROMPT_TEMPLATE.format(
-                    QUESTION=dataset["input"][i], ANSWER=dataset["output"][i]
+                    QUESTION=dataset["prompt"][i], ANSWER=""
                 )
                 prompts.append(prompt)
             return prompts
