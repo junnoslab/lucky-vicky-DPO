@@ -62,9 +62,6 @@ class DPOTrainer:
         # Setup tokenizer
         tokenizer.padding_side = "right"
 
-        # Setup model
-        model.config.use_cache = False
-
         # Load the adapter.
         _LOGGER.info(f"Using PEFT with config: {peft_config}")
         _model = PeftModel.from_pretrained(
