@@ -36,7 +36,7 @@ class ModelLoader:
         _tokenizer.padding_side = "right"
 
         bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16
+            load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4"
         )
         _model = AutoModelForCausalLM.from_pretrained(
             model.value,
@@ -51,15 +51,6 @@ class ModelLoader:
     def load_lora_model(
         self, model: Models, training_config: TrainConfig
     ) -> tuple[AutoTokenizer, AutoModelForCausalLM, LoraConfig]:
-        """
-        Load the specified model and return the LoraModel instance.
-
-        Args:
-            model (Models): The enum value representing the model to be loaded.
-
-        Returns:
-            LoraModel: The LoraModel instance.
-        """
         tokenizer, base_model = self.load_tokenizer_and_model(model)
         config = LoraConfig(
             task_type="CAUSAL_LM",
