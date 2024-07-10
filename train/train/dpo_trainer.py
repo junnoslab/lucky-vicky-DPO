@@ -8,7 +8,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from trl import DataCollatorForCompletionOnlyLM, DPOConfig, HFDPOTrainer
+from trl import DataCollatorForCompletionOnlyLM, DPOConfig, DPOTrainer as HFDPOTrainer
 
 from ..utils import TrainConfig
 from ..utils.constants import TRAIN_ADAPTER_NAME, REFERENCE_ADAPTER_NAME
