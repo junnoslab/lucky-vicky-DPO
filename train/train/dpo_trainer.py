@@ -46,7 +46,7 @@ class DPOTrainer:
             save_strategy="steps",
             save_total_limit=2,
             logging_strategy="steps",
-            logging_steps=5,
+            logging_steps=config.logging_steps,
         )
 
     def train(

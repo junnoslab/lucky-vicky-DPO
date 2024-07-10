@@ -130,3 +130,7 @@ class TrainConfig:
     output_dir: Optional[str] = field(
         default="./res", metadata={"help": "the output directory"}
     )
+
+    logging_steps: Optional[int] = field(
+        default=2, metadata={"help": "the logging frequency"}
+    )
