@@ -12,10 +12,6 @@ _LOGGER = logging.getLogger(__name__)
 
 def main():
     parser = HfArgumentParser(TrainConfig)
-    # HFParser with dataclass doesn't support choices, so we need to add it manually.
-    parser.add_argument(
-        "--train_mode", dest="train_mode", type=str, default="full", choices=["full", "sft", "dpo"]
-    )
     args = parser.parse_args_into_dataclasses()[0]
 
     logging.basicConfig(level=args.logger_level)

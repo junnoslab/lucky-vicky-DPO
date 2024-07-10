@@ -75,6 +75,19 @@ class TrainConfig:
     )
 
     # Train
+    _train_mode: Optional[str] = field(
+        default="full", metadata={"help": "the training mode (sft or dpo)"}
+    )
+    @property
+    def train_mode(self) -> Optional[str]:
+        return self._train_mode
+
+    @train_mode.setter
+    def train_mode(self, value: Optional[str]):
+        if value not in ["full", "sft", "dpo"]:
+            raise ValueError("train_mode must be one of 'full', 'sft', 'dpo'")
+        self._train_mode = value
+    
     epochs: Optional[int] = field(
         default=2, metadata={"help": "the number of training epochs"}
     )
