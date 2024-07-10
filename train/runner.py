@@ -6,7 +6,7 @@ import wandb
 
 from .data import DataLoader, Datasets
 from .model import ModelLoader, Models
-from .train import Trainer
+from .train import DPOTrainer, SFTTrainer
 from .utils import TrainConfig
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,8 +53,16 @@ class Runner:
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        trainer = Trainer(config=_config)
-        trainer.train(
+        sft_trainer = SFTTrainer(config=_config)
+        sft_trainer.train(
+            base_model,
+            tokenizer=tokenizer,
+            dataset=dataset,
+            peft_config=lora_config,
+        )
+
+        dpo_trainer = DPOTrainer(config=_config)
+        dpo_trainer.train(
             model=base_model,
             tokenizer=tokenizer,
             dataset=dataset,

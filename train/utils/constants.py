@@ -1,5 +1,8 @@
 DEVICE_MAP: str = "balanced"
 
+TRAIN_ADAPTER_NAME: str = "TrainAdapter"
+REFERENCE_ADAPTER_NAME: str = "ReferenceAdapter"
+
 INSTRUCTION_TEMPLATE: str = "\n### Instruction:"
 QUESTION_TEMPLATE: str = "\n### Question:"
 ANSWER_TEMPLATE: str = "\n### Answer:"
