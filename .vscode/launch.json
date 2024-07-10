@@ -10,6 +10,9 @@
 			"request": "launch",
 			"python": "${workspaceFolder}/.pixi/envs/default/bin/python",
 			"module": "train",
+			"args": [
+				"--_train_mode", "dpo"
+			],
 			"cwd": "${workspaceFolder}",
 			"justMyCode": false,
 			"preLaunchTask": "Install pixi dependencies"

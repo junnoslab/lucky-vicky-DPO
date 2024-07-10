@@ -29,7 +29,7 @@ train = { cmd = ["python", "-m", "train", "--is_ready_for_training", "True"] }
 t = { depends-on = ["train"] }
 train-debug = { cmd = ["python", "-m", "train"] }
 td = { depends-on = ["train-debug"] }
-train-dpo = { cmd = ["python", "-m", "train", "--_train_mode", "$TRAIN_MODE"], env = { TRAIN_MODE = "dpo" } }
+train-dpo = { cmd = ["python", "-m", "train", "--_train_mode", "dpo"] }
 tdpo = { depends-on = ["train-dpo"] }
 train-epochs = { cmd = ["python", "-m", "train", "--epochs", "$EPOCHS"], env = { EPOCHS = "2" } }
 te = { depends-on = ["train-epochs"] }
