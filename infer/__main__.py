@@ -27,7 +27,7 @@ if __name__ == "__main__":
     model_name = model.value
 
     bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16
+        load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4"
     )
     base_model = AutoModelForCausalLM.from_pretrained(
         model_name,
@@ -40,20 +40,20 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    adapter_path = f"res/{model_name.split('/')[-1]}"
+    adapter_path = f"res/{model_name.split('/')[-1]}/TrainAdapter"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
 
     adapted_model = PeftModel.from_pretrained(
         model=base_model,
         model_id=adapter_path,
-        adapter_name="lora",
+        adapter_name="TrainAdapter",
         config=peft_config,
         is_trainable=False,
         device_map=_DEVICE_MAP,
     )
     del base_model
-    adapted_model.set_adapter("lora")
+    adapted_model.set_adapter("TrainAdapter")
     _LOGGER.info(f"Using adapter: {adapted_model.active_adapter}")
 
     adapted_model.generation_config.cache_implementation = "static"

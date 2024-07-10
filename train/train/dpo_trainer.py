@@ -1,7 +1,7 @@
 import logging
 import os
 
-from datasets import Dataset
+from datasets import Dataset, DatasetDict
 from peft.peft_model import PeftModel
 from peft.config import PeftConfig
 from transformers import (
@@ -29,6 +29,8 @@ class DPOTrainer:
     def __init__(self, config: TrainConfig):
         self.training_args = DPOConfig(
             output_dir=config.output_dir,
+            max_length=2048,
+            max_prompt_length=1024,
             num_train_epochs=config.epochs,
             per_device_train_batch_size=config.per_device_train_batch_size,
             per_device_eval_batch_size=config.per_device_eval_batch_size,
@@ -81,14 +83,17 @@ class DPOTrainer:
         self.training_args.ref_adapter_name = REFERENCE_ADAPTER_NAME
 
         # TODO: Format dataset prompts
-        def format_prompt(dataset: Dataset):
-            prompts = []
-            for i in range(len(dataset["prompt"])):
-                prompt = PROMPT_TEMPLATE.format(
-                    QUESTION=dataset["prompt"][i], ANSWER=""
-                )
-                prompts.append(prompt)
-            return prompts
+        def format_prompt(dataset: Dataset) -> DatasetDict:
+            return DatasetDict(
+                {
+                    "prompt": [
+                        PROMPT_TEMPLATE.format(QUESTION=input, ANSWER="")
+                        for input in dataset["prompt"]
+                    ],
+                    "chosen": dataset["chosen"],
+                    "rejected": dataset["rejected"],
+                }
+            )
 
         instruction_template_ids = tokenizer.encode(
             INSTRUCTION_TEMPLATE, add_special_tokens=False
@@ -97,17 +102,22 @@ class DPOTrainer:
             ANSWER_TEMPLATE, add_special_tokens=False
         )[2:]
 
-        data_collator = DataCollatorForCompletionOnlyLM(
-            instruction_template=instruction_template_ids,
-            response_template=response_template_ids,
-            tokenizer=tokenizer,
+        # data_collator = DataCollatorForCompletionOnlyLM(
+        #     # instruction_template=instruction_template_ids,
+        #     response_template=response_template_ids,
+        #     tokenizer=tokenizer,
+        # )
+
+        dataset = dataset["train"].map(
+            format_prompt,
+            batched=True,
         )
 
         trainer = HFDPOTrainer(
             model=_model,
-            train_dataset=dataset["train"].map(format_prompt),
+            train_dataset=dataset,
+            tokenizer=tokenizer,
             args=self.training_args,
-            data_collator=data_collator,
         )
         trainer.train()
 
