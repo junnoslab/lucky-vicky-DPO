@@ -35,7 +35,7 @@ class TrainConfig:
         default=0.1, metadata={"help": "dropout probability for Lora layers"}
     )
     bias: Optional[str] = field(
-        default="lora_only",
+        default="none",
         metadata={
             "help": "bias type for LoRA. Can be ‘none’, ‘all’ or ‘lora_only’. If ‘all’ or ‘lora_only’, the corresponding biases will be updated during training"
         },
