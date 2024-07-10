@@ -53,20 +53,22 @@ class Runner:
         dataset = data_loader.load_dataset(Datasets.LUCKY_VICKY)
 
         # 3. Train (Use TrainingArguments)
-        sft_trainer = SFTTrainer(config=_config)
-        sft_trainer.train(
-            base_model,
-            tokenizer=tokenizer,
-            dataset=dataset,
-            peft_config=lora_config,
-        )
+        if self.config.train_mode == "sft" or self.config.train_mode == "full":
+            sft_trainer = SFTTrainer(config=_config)
+            sft_trainer.train(
+                base_model,
+                tokenizer=tokenizer,
+                dataset=dataset,
+                peft_config=lora_config,
+            )
 
-        dpo_trainer = DPOTrainer(config=_config)
-        dpo_trainer.train(
-            model=base_model,
-            tokenizer=tokenizer,
-            dataset=dataset,
-            peft_config=lora_config,
-        )
+        if self.config.train_mode == "dpo" or self.config.train_mode == "full":
+            dpo_trainer = DPOTrainer(config=_config)
+            dpo_trainer.train(
+                model=base_model,
+                tokenizer=tokenizer,
+                dataset=dataset,
+                peft_config=lora_config,
+            )
 
         wandb.finish()
