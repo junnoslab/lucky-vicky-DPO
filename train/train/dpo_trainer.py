@@ -8,7 +8,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from trl import DataCollatorForCompletionOnlyLM, DPOConfig, DPOTrainer
+from trl import DataCollatorForCompletionOnlyLM, DPOConfig, HFDPOTrainer
 
 from ..utils import TrainConfig
 from ..utils.constants import TRAIN_ADAPTER_NAME, REFERENCE_ADAPTER_NAME
@@ -106,7 +106,7 @@ class DPOTrainer:
             tokenizer=tokenizer,
         )
 
-        trainer = DPOTrainer(
+        trainer = HFDPOTrainer(
             model=_model,
             train_dataset=dataset["train"].map(format_prompt),
             args=self.training_args,

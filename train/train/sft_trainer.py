@@ -6,7 +6,7 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer
+from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer as HFSFTTrainer
 import torch.nn as nn
 
 from ..utils import TrainConfig
@@ -20,7 +20,7 @@ from ..utils.templates import (
 _TEMPLATES = [INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE]
 
 
-class Trainer:
+class SFTTrainer:
     training_args: SFTConfig
 
     def __init__(self, config: TrainConfig):
@@ -79,7 +79,7 @@ class Trainer:
             tokenizer=tokenizer,
         )
 
-        trainer = SFTTrainer(
+        trainer = HFSFTTrainer(
             model=model,
             train_dataset=dataset["train"],
             args=self.training_args,
