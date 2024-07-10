@@ -76,7 +76,7 @@ class TrainConfig:
 
     # Train
     _train_mode: Optional[str] = field(
-        default="full", metadata={"help": "the training mode (sft or dpo)"}
+        default="full", metadata={"help": "the training mode (full, sft, dpo)"}
     )
     @property
     def train_mode(self) -> Optional[str]:
