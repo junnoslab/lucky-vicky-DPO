@@ -56,11 +56,12 @@ class Runner:
         if self.config.train_mode == "sft" or self.config.train_mode == "full":
             sft_trainer = SFTTrainer(config=_config)
             sft_trainer.train(
-                base_model,
+                model=base_model,
                 tokenizer=tokenizer,
                 dataset=dataset,
                 peft_config=lora_config,
             )
+            del sft_trainer
 
         if self.config.train_mode == "dpo" or self.config.train_mode == "full":
             dpo_trainer = DPOTrainer(config=_config)
@@ -70,5 +71,6 @@ class Runner:
                 dataset=dataset,
                 peft_config=lora_config,
             )
+            del dpo_trainer
 
         wandb.finish()
