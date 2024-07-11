@@ -42,7 +42,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    adapter_path = f"res/{model_name.split('/')[-1]}"
+    adapter_path = "res/"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
 

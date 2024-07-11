@@ -1,5 +1,4 @@
 import logging
-import os
 
 from datasets import Dataset, DatasetDict
 from peft.peft_model import PeftModel
@@ -57,8 +56,7 @@ class DPOTrainer:
         dataset: Dataset,
         peft_config: PeftConfig,
     ) -> PreTrainedModel:
-        _model_name = model.config.name_or_path.split("/")[-1]
-        _model_result_path = os.path.join(self.training_args.output_dir, _model_name)
+        _model_path = self.training_args.output_dir
 
         # Setup tokenizer
         tokenizer.padding_side = "right"
@@ -67,7 +65,7 @@ class DPOTrainer:
         _LOGGER.info(f"Using PEFT with config: {peft_config}")
         _model = PeftModel.from_pretrained(
             model,
-            model_id=_model_result_path,
+            model_id=_model_path,
             adapter_name=TRAIN_ADAPTER_NAME,
             is_trainable=True,
             config=peft_config,
@@ -76,7 +74,7 @@ class DPOTrainer:
 
         # Load the second adapter, but with a different name.
         _model.load_adapter(
-            model_id=_model_result_path,
+            model_id=_model_path,
             adapter_name=REFERENCE_ADAPTER_NAME,
             is_trainable=True,
             peft_config=peft_config,
@@ -113,7 +111,7 @@ class DPOTrainer:
         )
         trainer.train()
 
-        trainer.save_model(_model_result_path)
-        _model.save_adapter(_model_result_path)
+        trainer.save_model(_model_path)
+        _model.save_adapter(_model_path)
 
         return trainer.model
