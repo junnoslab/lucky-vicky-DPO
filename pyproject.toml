@@ -38,6 +38,10 @@ te = { depends-on = ["train-epochs"] }
 infer = { cmd = ["python", "-m", "infer"] }
 i = { depends-on = ["infer"] }
 
+### Version
+bump = { cmd = ["bump-my-version", "bump"] }
+b = { depends-on = ["bump"] }
+
 [tool.pixi.dependencies]
 python = ">=3.11,<3.12"
 
