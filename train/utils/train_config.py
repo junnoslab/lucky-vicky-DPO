@@ -17,7 +17,7 @@ class TrainConfig:
         },
     )
     wandb_project_name: Optional[str] = field(
-        default="lora", metadata={"help": "wandb project name"}
+        default="lucky-vicky", metadata={"help": "wandb project name"}
     )
 
     # Model
@@ -78,6 +78,7 @@ class TrainConfig:
     _train_mode: Optional[str] = field(
         default="full", metadata={"help": "the training mode (full, sft, dpo)"}
     )
+
     @property
     def train_mode(self) -> Optional[str]:
         return self._train_mode
@@ -87,7 +88,7 @@ class TrainConfig:
         if value not in ["full", "sft", "dpo"]:
             raise ValueError("train_mode must be one of 'full', 'sft', 'dpo'")
         self._train_mode = value
-    
+
     epochs: Optional[int] = field(
         default=2, metadata={"help": "the number of training epochs"}
     )
@@ -144,5 +145,8 @@ class TrainConfig:
     )
 
     push_to_hub: Optional[str] = field(
-        default="Junnos/lucky-vicky", metadata={"help": "model id to push to hub. if it's set to None, it won't push to hub"}
+        default="Junnos/lucky-vicky",
+        metadata={
+            "help": "model id to push to hub. if it's set to None, it won't push to hub"
+        },
     )
