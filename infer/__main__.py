@@ -27,7 +27,9 @@ if __name__ == "__main__":
     model_name = model.value
 
     bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4"
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_quant_type="nf4",
     )
     base_model = AutoModelForCausalLM.from_pretrained(
         model_name,
@@ -40,7 +42,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    adapter_path = f"res/{model_name.split('/')[-1]}/TrainAdapter"
+    adapter_path = f"res/{model_name.split('/')[-1]}"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
 
