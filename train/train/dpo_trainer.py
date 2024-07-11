@@ -12,6 +12,7 @@ from trl import DPOConfig, DPOTrainer as HFDPOTrainer
 
 from ..utils import TrainConfig
 from ..utils.constants import TRAIN_ADAPTER_NAME, REFERENCE_ADAPTER_NAME
+from ..utils.secrets import HUGGINGFACE_HUB_TOKEN
 from ..utils.templates import PROMPT_TEMPLATE
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,7 +46,8 @@ class DPOTrainer:
             logging_strategy="steps",
             logging_steps=config.logging_steps,
             push_to_hub=config.push_to_hub is not None,
-            push_to_hub_model_id=config.push_to_hub,
+            hub_model_id=config.push_to_hub,
+            hub_token=HUGGINGFACE_HUB_TOKEN,
         )
 
     def train(

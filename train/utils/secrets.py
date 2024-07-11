@@ -1,0 +1,1 @@
+HUGGINGFACE_HUB_TOKEN: str = "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"

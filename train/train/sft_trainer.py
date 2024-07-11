@@ -10,6 +10,7 @@ from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer as HFSFTT
 import torch.nn as nn
 
 from ..utils import TrainConfig
+from ..utils.secrets import HUGGINGFACE_HUB_TOKEN
 from ..utils.templates import (
     INSTRUCTION_TEMPLATE,
     QUESTION_TEMPLATE,
@@ -45,6 +46,9 @@ class SFTTrainer:
             save_total_limit=2,
             logging_strategy="steps",
             logging_steps=config.logging_steps,
+            push_to_hub=config.push_to_hub is not None,
+            hub_model_id=config.push_to_hub,
+            hub_token=HUGGINGFACE_HUB_TOKEN,
         )
 
     def train(
