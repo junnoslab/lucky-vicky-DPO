@@ -114,5 +114,6 @@ class DPOTrainer:
         trainer.train()
 
         trainer.save_model(_model_result_path)
+        _model.save_adapter(_model_result_path)
 
         return trainer.model
