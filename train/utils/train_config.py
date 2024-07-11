@@ -131,6 +131,18 @@ class TrainConfig:
         default="./res", metadata={"help": "the output directory"}
     )
 
+    save_total_limit: Optional[int] = field(
+        default=2, metadata={"help": "the total number of checkpoints to save"}
+    )
+
+    save_steps: Optional[int] = field(
+        default=2, metadata={"help": "the saving frequency"}
+    )
+
     logging_steps: Optional[int] = field(
         default=2, metadata={"help": "the logging frequency"}
+    )
+
+    push_to_hub: Optional[str] = field(
+        default="Junnos/lucky-vicky", metadata={"help": "model id to push to hub. if it's set to None, it won't push to hub"}
     )

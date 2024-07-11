@@ -46,9 +46,12 @@ class DPOTrainer:
             dataloader_num_workers=config.dataloader_num_workers,
             evaluation_strategy="no",
             save_strategy="steps",
-            save_total_limit=2,
+            save_total_limit=config.save_total_limit,
+            save_steps=config.save_steps,
             logging_strategy="steps",
             logging_steps=config.logging_steps,
+            push_to_hub=config.push_to_hub is not None,
+            push_to_hub_model_id=config.push_to_hub,
         )
 
     def train(
