@@ -45,6 +45,7 @@ if __name__ == "__main__":
     adapter_path = "res/"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
+    peft_config.inference_mode = True
 
     adapted_model = PeftModel.from_pretrained(
         model=base_model,
@@ -91,7 +92,7 @@ if __name__ == "__main__":
             input_ids,
             generation_config=config,
             streamer=streamer,
-            max_new_tokens=512,
+            max_new_tokens=256,
             eos_token_id=terminators,
         )
 
