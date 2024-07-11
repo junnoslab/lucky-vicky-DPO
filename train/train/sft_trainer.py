@@ -13,12 +13,9 @@ from ..utils import TrainConfig
 from ..utils.secrets import HUGGINGFACE_HUB_TOKEN
 from ..utils.templates import (
     INSTRUCTION_TEMPLATE,
-    QUESTION_TEMPLATE,
     ANSWER_TEMPLATE,
     PROMPT_TEMPLATE,
 )
-
-_TEMPLATES = [INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE]
 
 
 class SFTTrainer:
