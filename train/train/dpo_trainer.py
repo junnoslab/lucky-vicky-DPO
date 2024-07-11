@@ -8,20 +8,14 @@ from transformers import (
     PreTrainedTokenizerBase,
     PreTrainedModel,
 )
-from trl import DataCollatorForCompletionOnlyLM, DPOConfig, DPOTrainer as HFDPOTrainer
+from trl import DPOConfig, DPOTrainer as HFDPOTrainer
 
 from ..utils import TrainConfig
 from ..utils.constants import TRAIN_ADAPTER_NAME, REFERENCE_ADAPTER_NAME
-from ..utils.templates import (
-    INSTRUCTION_TEMPLATE,
-    QUESTION_TEMPLATE,
-    ANSWER_TEMPLATE,
-    PROMPT_TEMPLATE,
-)
-
-_TEMPLATES = [INSTRUCTION_TEMPLATE, QUESTION_TEMPLATE, ANSWER_TEMPLATE]
+from ..utils.templates import PROMPT_TEMPLATE
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class DPOTrainer:
     training_args: DPOConfig
@@ -79,16 +73,21 @@ class DPOTrainer:
         del model
 
         # Load the second adapter, but with a different name.
-        _model.load_adapter(model_id=_model_result_path, adapter_name=REFERENCE_ADAPTER_NAME, is_trainable=True, peft_config=peft_config)
+        _model.load_adapter(
+            model_id=_model_result_path,
+            adapter_name=REFERENCE_ADAPTER_NAME,
+            is_trainable=True,
+            peft_config=peft_config,
+        )
 
         # Setup adapter
         self.training_args.model_adapter_name = TRAIN_ADAPTER_NAME
         self.training_args.ref_adapter_name = REFERENCE_ADAPTER_NAME
 
-        # TODO: Format dataset prompts
         def format_prompt(dataset: Dataset) -> DatasetDict:
             return DatasetDict(
                 {
+                    "index": dataset["index"],
                     "prompt": [
                         PROMPT_TEMPLATE.format(QUESTION=input, ANSWER="")
                         for input in dataset["prompt"]
@@ -98,22 +97,10 @@ class DPOTrainer:
                 }
             )
 
-        instruction_template_ids = tokenizer.encode(
-            INSTRUCTION_TEMPLATE, add_special_tokens=False
-        )[2:]
-        response_template_ids = tokenizer.encode(
-            ANSWER_TEMPLATE, add_special_tokens=False
-        )[2:]
-
-        # data_collator = DataCollatorForCompletionOnlyLM(
-        #     # instruction_template=instruction_template_ids,
-        #     response_template=response_template_ids,
-        #     tokenizer=tokenizer,
-        # )
-
         dataset = dataset["train"].map(
             format_prompt,
             batched=True,
+            remove_columns=["index", "prompt", "chosen", "rejected"],
         )
 
         trainer = HFDPOTrainer(
