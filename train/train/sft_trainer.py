@@ -1,5 +1,3 @@
-import os
-
 from datasets import Dataset
 from peft.config import PeftConfig
 from transformers import (
@@ -16,6 +14,7 @@ from ..utils.templates import (
     ANSWER_TEMPLATE,
     PROMPT_TEMPLATE,
 )
+from ..utils.training import DebugDataCollator
 
 
 class SFTTrainer:
@@ -61,8 +60,11 @@ class SFTTrainer:
         def format_prompt(dataset: Dataset):
             prompts = []
             for i in range(len(dataset["prompt"])):
-                prompt = PROMPT_TEMPLATE.format(
-                    QUESTION=dataset["prompt"][i], ANSWER=dataset["chosen"][i]
+                prompt = (
+                    PROMPT_TEMPLATE.format(
+                        QUESTION=dataset["prompt"][i], ANSWER=dataset["chosen"][i]
+                    )
+                    + tokenizer.eos_token
                 )
                 prompts.append(prompt)
             return prompts
@@ -80,18 +82,20 @@ class SFTTrainer:
             tokenizer=tokenizer,
         )
 
+        _debug_collator = DebugDataCollator(default_collator=data_collator)
+
         trainer = HFSFTTrainer(
             model=model,
             train_dataset=dataset["train"],
+            tokenizer=tokenizer,
             args=self.training_args,
             formatting_func=format_prompt,
-            data_collator=data_collator,
+            data_collator=_debug_collator,
             peft_config=peft_config,
         )
         trainer.train()
 
-        _model_name = model.config.name_or_path.split("/")[-1]
-        path = os.path.join(self.training_args.output_dir, _model_name)
-        trainer.save_model(path)
+        _model_path = self.training_args.output_dir
+        trainer.save_model(_model_path)
 
         return trainer.model

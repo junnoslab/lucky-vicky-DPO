@@ -42,9 +42,10 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=_DEVICE_MAP)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    adapter_path = f"res/{model_name.split('/')[-1]}"
+    adapter_path = "res/"
 
     peft_config = PeftConfig.from_pretrained(adapter_path)
+    peft_config.inference_mode = True
 
     adapted_model = PeftModel.from_pretrained(
         model=base_model,
@@ -85,13 +86,13 @@ if __name__ == "__main__":
         instruction = PROMPT_TEMPLATE.format(QUESTION=text, ANSWER="")
         input_ids = tokenizer(instruction, return_tensors="pt").input_ids.to(device)
 
-        streamer = TextStreamer(tokenizer)
+        streamer = TextStreamer(tokenizer, skip_prompt=True)
 
         _ = compiled_model.generate(
             input_ids,
             generation_config=config,
             streamer=streamer,
-            max_new_tokens=512,
+            max_new_tokens=256,
             eos_token_id=terminators,
         )
 
