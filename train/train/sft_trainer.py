@@ -14,6 +14,7 @@ from ..utils.templates import (
     ANSWER_TEMPLATE,
     PROMPT_TEMPLATE,
 )
+from ..utils.training import DebugDataCollator
 
 
 class SFTTrainer:
@@ -78,12 +79,15 @@ class SFTTrainer:
             tokenizer=tokenizer,
         )
 
+        debug_collator = DebugDataCollator(default_collator=data_collator)
+
         trainer = HFSFTTrainer(
             model=model,
             train_dataset=dataset["train"],
+            tokenizer=tokenizer,
             args=self.training_args,
             formatting_func=format_prompt,
-            data_collator=data_collator,
+            data_collator=debug_collator,
             peft_config=peft_config,
         )
         trainer.train()
