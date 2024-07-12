@@ -92,8 +92,13 @@ class DPOTrainer:
                         PROMPT_TEMPLATE.format(QUESTION=input, ANSWER="")
                         for input in dataset["prompt"]
                     ],
-                    "chosen": dataset["chosen"],
-                    "rejected": dataset["rejected"],
+                    "chosen": [
+                        chosen + tokenizer.eos_token for chosen in dataset["chosen"]
+                    ],
+                    "rejected": [
+                        rejected + tokenizer.eos_token
+                        for rejected in dataset["rejected"]
+                    ],
                 }
             )
 

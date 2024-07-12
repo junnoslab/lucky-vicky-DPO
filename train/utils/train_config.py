@@ -90,7 +90,7 @@ class TrainConfig:
         self._train_mode = value
 
     epochs: Optional[int] = field(
-        default=2, metadata={"help": "the number of training epochs"}
+        default=3, metadata={"help": "the number of training epochs"}
     )
     beta: Optional[float] = field(
         default=0.1, metadata={"help": "the beta parameter for DPO loss"}

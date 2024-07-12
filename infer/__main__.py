@@ -86,7 +86,7 @@ if __name__ == "__main__":
         instruction = PROMPT_TEMPLATE.format(QUESTION=text, ANSWER="")
         input_ids = tokenizer(instruction, return_tensors="pt").input_ids.to(device)
 
-        streamer = TextStreamer(tokenizer)
+        streamer = TextStreamer(tokenizer, skip_prompt=True)
 
         _ = compiled_model.generate(
             input_ids,

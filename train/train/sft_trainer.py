@@ -60,8 +60,11 @@ class SFTTrainer:
         def format_prompt(dataset: Dataset):
             prompts = []
             for i in range(len(dataset["prompt"])):
-                prompt = PROMPT_TEMPLATE.format(
-                    QUESTION=dataset["prompt"][i], ANSWER=dataset["chosen"][i]
+                prompt = (
+                    PROMPT_TEMPLATE.format(
+                        QUESTION=dataset["prompt"][i], ANSWER=dataset["chosen"][i]
+                    )
+                    + tokenizer.eos_token
                 )
                 prompts.append(prompt)
             return prompts
@@ -79,7 +82,7 @@ class SFTTrainer:
             tokenizer=tokenizer,
         )
 
-        debug_collator = DebugDataCollator(default_collator=data_collator)
+        _debug_collator = DebugDataCollator(default_collator=data_collator)
 
         trainer = HFSFTTrainer(
             model=model,
@@ -87,7 +90,7 @@ class SFTTrainer:
             tokenizer=tokenizer,
             args=self.training_args,
             formatting_func=format_prompt,
-            data_collator=debug_collator,
+            data_collator=_debug_collator,
             peft_config=peft_config,
         )
         trainer.train()
